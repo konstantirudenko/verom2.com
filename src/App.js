@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import './App.css';
 
 function App() {
   const text = "monix and maryan ";
@@ -22,12 +23,7 @@ function App() {
         window.open(
           urls[i % urls.length],
           "_blank",
-          `
-          width=${300 + Math.random() * 400},
-          height=${200 + Math.random() * 300},
-          left=${Math.random() * window.screen.width},
-          top=${Math.random() * window.screen.height}
-          `
+          `width=${300 + Math.random() * 400},height=${200 + Math.random() * 300},left=${Math.random() * window.screen.width},top=${Math.random() * window.screen.height}`
         );
       }, i * 250);
     }
@@ -122,12 +118,7 @@ function App() {
 
     return {
       ...styles.img,
-      transform: `
-        translate(${Math.random() * 40 - 20}px,
-        ${Math.random() * 40 - 20}px)
-        rotate(${Math.random() * 20 - 10}deg)
-        scale(${0.8 + Math.random() * 0.6})
-      `,
+      transform: `translate(${Math.random() * 40 - 20}px, ${Math.random() * 40 - 20}px) rotate(${Math.random() * 20 - 10}deg) scale(${0.8 + Math.random() * 0.6})`,
       boxShadow: "0 0 25px red"
     };
   };
@@ -165,7 +156,6 @@ function App() {
         <img src="/download (3).jpg" alt="room3" style={getImageStyle()} />
       </div>
 
-      {/* FAKE POPUPS */}
       {fakePopups.map(p => (
         <div
           key={p.id}
@@ -185,85 +175,12 @@ function App() {
             zIndex: 9999
           }}
         >
-          <div
-            style={{
-              borderBottom: "1px solid #ff0000",
-              marginBottom: "4px"
-            }}
-          >
+          <div style={{ borderBottom: "1px solid #ff0000", marginBottom: "4px" }}>
             <span style={{ color: "red" }}>ALERT</span> - SYSTEM BREACH
           </div>
-
           <div>{p.text}</div>
         </div>
       ))}
-
-      {/* ANIMATIONS */}
-      <style>
-        {`
-          @keyframes glitch {
-            0% {
-              text-shadow: 2px 2px red, -2px -2px blue;
-            }
-
-            20% {
-              text-shadow: -2px 2px red, 2px -2px blue;
-            }
-
-            40% {
-              text-shadow: 4px -4px red, -4px 4px blue;
-            }
-
-            60% {
-              text-shadow: -4px -4px red, 4px 4px blue;
-            }
-
-            80% {
-              text-shadow: 2px -2px red, -2px 2px blue;
-            }
-
-            100% {
-              text-shadow: 2px 2px red, -2px -2px blue;
-            }
-          }
-
-          @keyframes flicker {
-            0% {
-              opacity: 1;
-            }
-
-            50% {
-              opacity: 0.4;
-            }
-
-            100% {
-              opacity: 1;
-            }
-          }
-
-          @keyframes shake {
-            0% {
-              transform: translate(0px, 0px);
-            }
-
-            25% {
-              transform: translate(3px, -3px);
-            }
-
-            50% {
-              transform: translate(-3px, 3px);
-            }
-
-            75% {
-              transform: translate(3px, 3px);
-            }
-
-            100% {
-              transform: translate(0px, 0px);
-            }
-          }
-        `}
-      </style>
     </div>
   );
 }
