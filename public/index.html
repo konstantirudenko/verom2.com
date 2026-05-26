@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Hacked by maryan and monix"
+    />
+    <title>HACKED</title>
+    <style>
+      @keyframes glitch {
+        0% {
+          transform: translate(-2px, -2px);
+        }
+        20% {
+          transform: translate(2px, 2px);
+        }
+        40% {
+          transform: translate(-2px, 2px);
+        }
+        60% {
+          transform: translate(2px, -2px);
+        }
+        80% {
+          transform: translate(-2px, 2px);
+        }
+        100% {
+          transform: translate(2px, -2px);
+        }
+      }
+
+      @keyframes flicker {
+        0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+          opacity: 1;
+        }
+        20%, 24%, 55% {
+          opacity: 0.3;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>
