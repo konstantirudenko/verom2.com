@@ -36,3 +36,55 @@
     transform: rotate(360deg);
   }
 }
+
+/* HACKED THEME ANIMATIONS */
+@keyframes glitch {
+  0% {
+    text-shadow: 2px 2px red, -2px -2px blue;
+  }
+  20% {
+    text-shadow: -2px 2px red, 2px -2px blue;
+  }
+  40% {
+    text-shadow: 4px -4px red, -4px 4px blue;
+  }
+  60% {
+    text-shadow: -4px -4px red, 4px 4px blue;
+  }
+  80% {
+    text-shadow: 2px -2px red, -2px 2px blue;
+  }
+  100% {
+    text-shadow: 2px 2px red, -2px -2px blue;
+  }
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: translate(0px, 0px);
+  }
+  25% {
+    transform: translate(3px, -3px);
+  }
+  50% {
+    transform: translate(-3px, 3px);
+  }
+  75% {
+    transform: translate(3px, 3px);
+  }
+  100% {
+    transform: translate(0px, 0px);
+  }
+}
