@@ -108,6 +108,7 @@ function App() {
   // ----------------------------
   // CLEANUP
   // ----------------------------
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     return () => {
       intervals.current.forEach(clearInterval);
