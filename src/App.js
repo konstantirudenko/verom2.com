@@ -83,8 +83,15 @@ function App() {
         ...prev,
         {
           id: Math.random(),
-          left: Math.random() * 80,
-          top: Math.random() * 70,
+
+          // position
+          x: Math.random() * (window.innerWidth - 300),
+          y: Math.random() * (window.innerHeight - 150),
+
+          // movement
+          dx: (Math.random() - 0.5) * 12,
+          dy: (Math.random() - 0.5) * 12,
+
           width: 150 + Math.random() * 200,
           height: 80 + Math.random() * 120,
           text: getRandomScaryText()
@@ -94,9 +101,47 @@ function App() {
 
     intervals.current.push(popupInterval);
 
+    // Move popups around
+    const moveInterval = setInterval(() => {
+      setFakePopups(prev =>
+        prev.map(p => {
+          let newX = p.x + p.dx;
+          let newY = p.y + p.dy;
+
+          let newDx = p.dx;
+          let newDy = p.dy;
+
+          // Bounce off walls
+          if (newX <= 0 || newX + p.width >= window.innerWidth) {
+            newDx *= -1;
+          }
+
+          if (newY <= 0 || newY + p.height >= window.innerHeight) {
+            newDy *= -1;
+          }
+
+          return {
+            ...p,
+            x: Math.max(
+              0,
+              Math.min(window.innerWidth - p.width, newX)
+            ),
+            y: Math.max(
+              0,
+              Math.min(window.innerHeight - p.height, newY)
+            ),
+            dx: newDx,
+            dy: newDy
+          };
+        })
+      );
+    }, 16);
+
+    intervals.current.push(moveInterval);
+
     // Limit popup count
     const cleanupInterval = setInterval(() => {
-      setFakePopups(prev => prev.slice(-60));
+      setFakePopups(prev => prev.slice(-300));
     }, 1000);
 
     intervals.current.push(cleanupInterval);
@@ -171,8 +216,8 @@ function App() {
           key={p.id}
           style={{
             position: "fixed",
-            left: `${p.left}vw`,
-            top: `${p.top}vh`,
+            left: `${p.x}px`,
+            top: `${p.y}px`,
             width: p.width,
             height: p.height,
             backgroundColor: "#050505",
