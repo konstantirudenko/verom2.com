@@ -7,6 +7,7 @@ function App() {
   const [fakePopups, setFakePopups] = useState([]);
 
   const intervals = useRef([]);
+  const animationFrameIds = useRef([]);
 
   // ----------------------------
   // OPEN MULTIPLE BROWSER WINDOWS
@@ -87,7 +88,9 @@ function App() {
           top: Math.random() * 70,
           width: 150 + Math.random() * 200,
           height: 80 + Math.random() * 120,
-          text: getRandomScaryText()
+          text: getRandomScaryText(),
+          velocityX: (Math.random() - 0.5) * 4,
+          velocityY: (Math.random() - 0.5) * 4
         }
       ]);
     }, 180);
@@ -106,12 +109,57 @@ function App() {
   };
 
   // ----------------------------
+  // ANIMATE POPUPS MOVEMENT
+  // ----------------------------
+  useEffect(() => {
+    if (!chaos) return;
+
+    const movePopups = () => {
+      setFakePopups(prev => prev.map(p => {
+        let newLeft = p.left + p.velocityX;
+        let newTop = p.top + p.velocityY;
+        let newVelocityX = p.velocityX;
+        let newVelocityY = p.velocityY;
+
+        // Bounce off edges
+        if (newLeft <= 0 || newLeft + (p.width / window.innerWidth * 100) >= 100) {
+          newVelocityX *= -1;
+          newLeft = Math.max(0, Math.min(100 - (p.width / window.innerWidth * 100), newLeft));
+        }
+
+        if (newTop <= 0 || newTop + (p.height / window.innerHeight * 100) >= 100) {
+          newVelocityY *= -1;
+          newTop = Math.max(0, Math.min(100 - (p.height / window.innerHeight * 100), newTop));
+        }
+
+        return {
+          ...p,
+          left: newLeft,
+          top: newTop,
+          velocityX: newVelocityX,
+          velocityY: newVelocityY
+        };
+      }));
+
+      animationFrameIds.current.push(requestAnimationFrame(movePopups));
+    };
+
+    animationFrameIds.current.push(requestAnimationFrame(movePopups));
+
+    return () => {
+      animationFrameIds.current.forEach(id => cancelAnimationFrame(id));
+      animationFrameIds.current = [];
+    };
+  }, [chaos]);
+
+  // ----------------------------
   // CLEANUP
   // ----------------------------
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     return () => {
       intervals.current.forEach(clearInterval);
+      animationFrameIds.current.forEach(cancelAnimationFrame);
     };
   }, []);
 
@@ -183,7 +231,8 @@ function App() {
             fontSize: "12px",
             padding: "8px",
             boxShadow: "0 0 15px red",
-            zIndex: 9999
+            zIndex: 9999,
+            transition: "left 0.05s linear, top 0.05s linear"
           }}
         >
           <div
