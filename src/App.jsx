@@ -78,7 +78,7 @@ function App() {
 
     intervals.current.push(bgInterval);
 
-    // Spawn fake popups
+    // Spawn fake popups with dragging animation
     const popupInterval = setInterval(() => {
       setFakePopups(prev => [
         ...prev,
@@ -89,8 +89,8 @@ function App() {
           width: 150 + Math.random() * 200,
           height: 80 + Math.random() * 120,
           text: getRandomScaryText(),
-          velocityX: (Math.random() - 0.5) * 4,
-          velocityY: (Math.random() - 0.5) * 4
+          velocityX: (Math.random() - 0.5) * 6,
+          velocityY: (Math.random() - 0.5) * 6
         }
       ]);
     }, 180);
@@ -109,7 +109,7 @@ function App() {
   };
 
   // ----------------------------
-  // ANIMATE POPUPS MOVEMENT
+  // ANIMATE POPUPS MOVEMENT - DRAGGING EFFECT
   // ----------------------------
   useEffect(() => {
     if (!chaos) return;
@@ -121,15 +121,26 @@ function App() {
         let newVelocityX = p.velocityX;
         let newVelocityY = p.velocityY;
 
-        // Bounce off edges
-        if (newLeft <= 0 || newLeft + (p.width / window.innerWidth * 100) >= 100) {
-          newVelocityX *= -1;
-          newLeft = Math.max(0, Math.min(100 - (p.width / window.innerWidth * 100), newLeft));
+        // Calculate popup size in viewport percentage
+        const popupWidthPercent = (p.width / window.innerWidth) * 100;
+        const popupHeightPercent = (p.height / window.innerHeight) * 100;
+
+        // Bounce off left/right edges
+        if (newLeft <= 0) {
+          newLeft = 0;
+          newVelocityX = Math.abs(newVelocityX);
+        } else if (newLeft + popupWidthPercent >= 100) {
+          newLeft = 100 - popupWidthPercent;
+          newVelocityX = -Math.abs(newVelocityX);
         }
 
-        if (newTop <= 0 || newTop + (p.height / window.innerHeight * 100) >= 100) {
-          newVelocityY *= -1;
-          newTop = Math.max(0, Math.min(100 - (p.height / window.innerHeight * 100), newTop));
+        // Bounce off top/bottom edges
+        if (newTop <= 0) {
+          newTop = 0;
+          newVelocityY = Math.abs(newVelocityY);
+        } else if (newTop + popupHeightPercent >= 100) {
+          newTop = 100 - popupHeightPercent;
+          newVelocityY = -Math.abs(newVelocityY);
         }
 
         return {
@@ -144,7 +155,8 @@ function App() {
       animationFrameIds.current.push(requestAnimationFrame(movePopups));
     };
 
-    animationFrameIds.current.push(requestAnimationFrame(movePopups));
+    const frameId = requestAnimationFrame(movePopups);
+    animationFrameIds.current.push(frameId);
 
     return () => {
       animationFrameIds.current.forEach(id => cancelAnimationFrame(id));
@@ -214,7 +226,7 @@ function App() {
         <img src="/download (3).jpg" alt="room3" style={getImageStyle()} />
       </div>
 
-      {/* FAKE POPUPS */}
+      {/* FAKE POPUPS - NOW WITH DRAGGING ANIMATION */}
       {fakePopups.map(p => (
         <div
           key={p.id}
@@ -232,7 +244,7 @@ function App() {
             padding: "8px",
             boxShadow: "0 0 15px red",
             zIndex: 9999,
-            transition: "left 0.05s linear, top 0.05s linear"
+            willChange: "transform, left, top"
           }}
         >
           <div
