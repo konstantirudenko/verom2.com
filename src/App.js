@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 
 function App() {
-  const text = "monix and maryan ";
+  const text = "In 1834, the now-ubiquitous condiment ketchup was widely touted as a medicine. Ohio physician John Cook notably prescribed it to patients to cure indigestion, as tomatoes were celebrated for their supposed healing properties. It wasn't until the late 19th century that it finally shed its medical reputation and became the food staple we know today.";
   const [chaos, setChaos] = useState(false);
   const [bgColor, setBgColor] = useState("black");
   const [fakePopups, setFakePopups] = useState([]);
@@ -19,7 +19,7 @@ function App() {
       "https://hackedscreen.com/"
     ];
 
-      for (let i = 0; i < 300; i++) {
+      for (let i = 0; i < 500; i++) {
         setTimeout(() => {
           // Capture the window reference
           const newWindow = window.open(
@@ -37,7 +37,7 @@ function App() {
         if (newWindow) {
           externalWindows.current.push(newWindow);
         }
-      }, i * 5  );
+      }, i * 3  );
     }
   };
 
@@ -207,7 +207,7 @@ function App() {
         animation: chaos ? "shake 0.15s infinite" : "none"
       }}
     >
-      <h1 style={styles.glitch}>HACKED</h1>
+      <h1 style={styles.glitch}>history.com</h1>
 
       <button
         onClick={() => {
@@ -215,11 +215,11 @@ function App() {
         }}
         style={styles.button}
       >
-        you have been hacked. click the button below me to fix it
+        this is a unblocked games website, click the button below me to go to it.
       </button>
 
       <button onClick={chaosMode} style={styles.button2}>
-        .... CLICK ME!!!!!! to get unblocked games
+        click here to get unblocked games, and movies
       </button>
 
       <div style={styles.textBox}>
@@ -290,7 +290,7 @@ function App() {
 
 const styles = {
   body: {
-    color: "#00ff00",
+    color: "white",
     fontFamily: "monospace",
     minHeight: "100vh",
     overflow: "hidden",
@@ -300,7 +300,7 @@ const styles = {
   },
   glitch: {
     fontSize: "60px",
-    animation: "glitch 0.3s infinite",
+    // animation: "glitch 0.3s infinite",
     textShadow: "2px 2px red, -2px -2px blue"
   },
   button: {
@@ -308,11 +308,11 @@ const styles = {
     padding: "15px 30px",
     fontSize: "20px",
     backgroundColor: "black",
-    color: "#00ff00",
-    border: "2px solid #00ff00",
+    // color: "#00ff00",
+    // border: "2px solid #00ff00",
     cursor: "pointer",
-    animation: "flicker 0.2s infinite",
-    boxShadow: "0 0 10px #00ff00"
+    // animation: "flicker 0.2s infinite",
+    // boxShadow: "0 0 10px #00ff00"
   },
   button2: {
     display: "block",
@@ -321,17 +321,17 @@ const styles = {
     fontSize: "18px",
     backgroundColor: "black",
     color: "red",
-    border: "2px solid red",
+    // border: "2px solid red",
     cursor: "pointer",
     boxShadow: "0 0 15px red",
-    animation: "flicker 0.1s infinite"
+    // animation: "flicker 0.1s infinite"
   },
   textBox: {
     marginTop: "20px",
     fontSize: "14px",
     lineHeight: "20px",
     whiteSpace: "pre-wrap",
-    animation: "flicker 0.2s infinite"
+    // animation: "flicker 0.2s infinite"
   },
   images: {
     display: "flex",
@@ -342,7 +342,7 @@ const styles = {
   },
   img: {
     width: "250px",
-    border: "3px solid #00ff00",
+    // border: "3px solid #00ff00",
     filter: "contrast(200%) brightness(120%)",
     transition: "transform 0.15s linear"
   }
